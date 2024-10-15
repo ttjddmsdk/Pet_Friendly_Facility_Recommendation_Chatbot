@@ -1,4 +1,4 @@
-# Pet-Friendly-Facility-Recommendation-Chatbot
+# 🐶Pet-Friendly-Facility-Recommendation-Chatbot
 
 # 프로젝트 소개
 ---
