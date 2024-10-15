@@ -13,7 +13,7 @@
 이에 본 프로젝트는 대화형 챗봇을 통해 반려동물 동반 가능 시설에 대한 정보를 손쉽게 제공함으로써, 반려인들의 정보 탐색 과정을 간소화하고 편의성을 높이는 것을 목표로 한다.
 
 
-### 활용데이터
+## 활용데이터
 [전국 반려동물 동반가능 문화시설 위치(한국문화정보원)](https://www.culture.go.kr/data/openapi/openapiView.do?id=585)
 
 
@@ -27,17 +27,22 @@
 
 ### 2. RAG 파이프라인 구축
 Rag : 사용자의 질문을 파악하여 관련 데이터를 데이터베이스에서 검색하여 답변하도록. 할루시네이션을 해소하기 위함
-#### 2-1. Rag data 생성
+##### 2-1. Rag data 생성
 사용자의 질문과 rag data의 page_content 속성과의 유사도를 통한 검색이 진행된다. 즉, 검색에 필요한 정보가 모두 담긴 ‘하나’의 컬럼이 필요하므로, 생성히여 page_content로 지정한다. **각 행의 정보를 요약한 텍스트인 ‘rag_text’ 컬럼을 추가**한다.
-#### 2-2. Load Data
+##### 2-2. Load Data
 ‘rag_text’를  page_content로 지정하고 DataFrameLoader를 사용하여 전체 데이터프레임을 Document 객체의 리스트로 로드한다. 
-#### 2-3. Text Split
+##### 2-3. Text Split
 검색 효율성을 높이기 위해 RecursiveCharacterTextSplitter를 이용하여 로드한 텍스트를 작은 조각으로 분할한다. 이 과정은 문서 검색 및 처리 속도를 향상시키는 데 종요한 역할을 한다.
-#### 2-4. Indexing
+##### 2-4. Indexing
 HuggingFaceEmbeddings를 사용하여 분할한 텍스트를 임베딩 한 후, Chroma Vector DB에 저장한다. 
-#### 2-5. Retrieval(검색)
+##### 2-5. Retrieval(검색)
 MultiQueryRetriever 사용. MultiQueryRetriever는 사용자가 입력한 쿼리를 LLM을 활용해 여러 변형된 쿼리로 생성한 뒤, 이를 바탕으로 문서를 검색하고 중복된 항목을 제거하여 고유한 문서들을 결합해 결과로 반환하는 도구이다.
+
 검색기는 이전에 저장한 vector_db를 사용하며, 검색 알고리즘으로는 MMR(Maximal Marginal Relevance)을 적용하였고, LLM으로는 GPT-4를 사용하였다. 또한, search_kwargs 매개변수에서 'k': 3으로 설정해 상위 3개의 정보를 반환하도록 구현하였다.
-#### 2-6. 생성
-LangChain을 사용하여 구현. ConversationalRetrievalChain과 ConversationBufferMemory를 통해 
+##### 2-6. 생성
+LangChain을 사용하여 구현. ConversationalRetrievalChain과 ConversationBufferMemory를 사용하였고, 
 Chat History와 retriever를 통해 질의응답 기억을 참고하여 답변하도록 했음.
+
+### 3. 웹 서비스 개발
+앞서 제작한 챗봇을 실제로 사용해보고자 streamlit을 사용하여 웹 서비스를 구현하였다.
+사용자가 OpenAI API 키를 사이드바에 입력하여 챗봇을 사용할 수 있도록 하였으며, 답변과 함께 지도를 출력해 시설의 위치 정보를 직관적으로 제공하였다. 또한, session_state에 Chroma 데이터와 대화 기록(chat_history)을 저장하여 더욱 효율적이고 원활한 서비스 구동이 가능하도록 최적화하였다.
