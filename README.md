@@ -56,12 +56,13 @@ HuggingFaceEmbeddings를 사용하여 분할한 텍스트를 **임베딩 한 후
 #### 5). Retrieval(검색)
 **MultiQueryRetriever** 사용. MultiQueryRetriever는 사용자가 입력한 쿼리를 LLM을 활용해 여러 변형된 쿼리로 생성한 뒤, 이를 바탕으로 문서를 검색하고 중복된 항목을 제거하여 고유한 문서들을 결합해 결과로 반환하는 도구이다.
 
-검색기는 이전에 저장한 **vector_db**를 사용하며, 검색 알고리즘으로는 **MMR**(Maximal Marginal Relevance)을 적용하였고, LLM으로는 **GPT-4o-mini**를 사용한다. 또한, search_kwargs 매개변수에서 'k': 3으로 설정해 **상위 3개**의 정보를 반환하도록 한다.
+검색기는 이전에 저장한 **vector_db**를 사용하며, 검색 알고리즘으로는 **MMR**(Maximal Marginal Relevance)을 적용하고, LLM으로는 **GPT-4o-mini**를 사용한다. 또한, search_kwargs 매개변수에서 'k': 3으로 설정해 **상위 3개**의 정보를 반환하도록 한다.
 #### 6). 생성
-LangChain을 사용하여 구현한다. **ConversationalRetrievalChain**과 **ConversationBufferMemory**를 사용하였고, 
-Chat History와 retriever를 통해 질의응답 기억을 참고하여 답변하도록 한다.
+LangChain을 사용하여 구현한다. **ConversationalRetrievalChain**과 **ConversationBufferMemory**를 사용하고, Chat History와 retriever를 통해 질의응답 기억을 참고하여 답변하도록 한다.
 
-[프롬프트]
+LLM 모델로는 **GPT-4o-mini**를 사용하고, **temperature**값을 0으로 지정한다. 창의적인 답변보단 사실을 기반으로 정해진 응답을 해야 하므로 낮은 temperature 값을 사용한다.
+
+<u>[Prompt]</u>
 ```ruby
 prompt = ChatPromptTemplate.from_messages(
     [
