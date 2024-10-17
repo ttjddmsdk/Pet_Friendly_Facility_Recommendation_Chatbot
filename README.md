@@ -32,7 +32,7 @@
  　
 # 4. 상세과정
 ---
-프로젝트는 크게 **데이터 전처리** - **RAG 파이프라인 구축** - **웹 사이트 개발** 순으로 진행됨.
+프로젝트는 크게 **데이터 전처리** - **RAG 파이프라인 구축** - **웹 사이트 개발** 순으로 진행된다.
 
 　
 ## 4-1. 데이터 전처리
@@ -56,12 +56,33 @@ HuggingFaceEmbeddings를 사용하여 분할한 텍스트를 **임베딩 한 후
 #### 5). Retrieval(검색)
 **MultiQueryRetriever** 사용. MultiQueryRetriever는 사용자가 입력한 쿼리를 LLM을 활용해 여러 변형된 쿼리로 생성한 뒤, 이를 바탕으로 문서를 검색하고 중복된 항목을 제거하여 고유한 문서들을 결합해 결과로 반환하는 도구이다.
 
-검색기는 이전에 저장한 **vector_db**를 사용하며, 검색 알고리즘으로는 **MMR**(Maximal Marginal Relevance)을 적용하였고, LLM으로는 **GPT-4o-mini**를 사용하였다. 또한, search_kwargs 매개변수에서 'k': 3으로 설정해 **상위 3개**의 정보를 반환하도록 구현하였다.
+검색기는 이전에 저장한 **vector_db**를 사용하며, 검색 알고리즘으로는 **MMR**(Maximal Marginal Relevance)을 적용하였고, LLM으로는 **GPT-4o-mini**를 사용한다. 또한, search_kwargs 매개변수에서 'k': 3으로 설정해 **상위 3개**의 정보를 반환하도록 한다.
 #### 6). 생성
-LangChain을 사용하여 구현. **ConversationalRetrievalChain**과 **ConversationBufferMemory**를 사용하였고, 
-Chat History와 retriever를 통해 질의응답 기억을 참고하여 답변하도록 했음.
+LangChain을 사용하여 구현한다. **ConversationalRetrievalChain**과 **ConversationBufferMemory**를 사용하였고, 
+Chat History와 retriever를 통해 질의응답 기억을 참고하여 답변하도록 한다.
 
-　
+[프롬프트]
+```ruby
+prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """
+            You are a helpful assistant. 
+            You are a chatbot that provides information about pet-friendly facilities. 
+            Please respond based on the context.
+            Answer questions using only the following context.
+            모든 정보를 알려줘. 간결하게 답해줘.
+            If you don't know the answer just say you don't know, 
+            don't make it up:
+            \n\n
+            {context}
+            """,
+        ),
+        ("human", "{question}"),
+    ]
+)
+```
 ## 4-3. 웹 서비스 개발
-앞서 제작한 챗봇을 실제로 사용해보고자 **streamlit**을 사용하여 웹 서비스를 구현하였다.
+앞서 제작한 챗봇을 실제로 사용해보고자 **streamlit**을 사용하여 채팅 서비스를 구현하였다.
 사용자가 **OpenAI API 키를 사이드바에 입력**하여 챗봇을 사용할 수 있도록 하였으며, 답변과 함께 **지도를 출력**해 시설의 위치 정보를 직관적으로 제공하였다. 또한, session_state에 Chroma 데이터와 대화 기록(chat_history)을 저장하여 더욱 효율적이고 원활한 서비스 구동이 가능하도록 최적화하였다.
