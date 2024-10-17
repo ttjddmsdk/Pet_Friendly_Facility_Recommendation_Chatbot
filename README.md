@@ -54,9 +54,9 @@ Rag : 사용자의 질문을 파악하여 관련 데이터를 데이터베이스
 #### 2). Load Data
 **‘rag_text’를  page_content로 지정**하고 DataFrameLoader를 사용하여 전체 데이터프레임을 Document 객체의 리스트로 **로드**한다. 
 #### 3). Text Split
-검색 효율성을 높이기 위해 RecursiveCharacterTextSplitter를 이용하여 로드한 **텍스트를 작은 조각으로 분할**한다. 이 과정은 **문서 검색 및 처리 속도를 향상**시키는 데 요한 역할을 한다.
+검색 효율성을 높이기 위해 **RecursiveCharacterTextSplitter**를 이용하여 로드한 **텍스트를 작은 조각으로 분할**한다. 이 과정은 **문서 검색 및 처리 속도를 향상**시키는 데 요한 역할을 한다.
 #### 4). Indexing
-HuggingFaceEmbeddings를 사용하여 분할한 텍스트를 **임베딩 한 후**, **Chroma Vector DB에 저장**한다. 
+**HuggingFaceEmbeddings**를 사용하여 분할한 텍스트를 **임베딩 한 후**, **Chroma Vector DB에 저장**한다. 
 #### 5). Retrieval(검색)
 **MultiQueryRetriever** 사용. MultiQueryRetriever는 사용자가 입력한 쿼리를 LLM을 활용해 여러 변형된 쿼리로 생성한 뒤, 이를 바탕으로 문서를 검색하고 중복된 항목을 제거하여 고유한 문서들을 결합해 결과로 반환하는 도구이다.
 
@@ -91,3 +91,6 @@ prompt = ChatPromptTemplate.from_messages(
 ## 4-3. 웹 서비스 개발
 앞서 제작한 챗봇을 실제로 사용해 보고자 **streamlit**을 사용하여 채팅 서비스를 구현하였다.
 사용자가 **OpenAI API 키를 사이드바에 입력**하여 챗봇을 사용할 수 있도록 하였으며, 답변과 함께 **지도를 출력**해 시설의 위치 정보를 직관적으로 제공하였다. 또한, session_state에 Chroma 데이터와 대화 기록(chat_histo ry)을 저장하여 더욱 효율적이고 원활한 서비스 구동이 가능하도록 최적화하였다.
+
+
+# 5. 회고
